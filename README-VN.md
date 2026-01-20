@@ -81,34 +81,29 @@ Bạn cũng sẽ cần một cơ sở dữ liệu [Mongo](https://www.mongodb.co
 
 ```javascript
 const { Agenda } = require('@lamtp3-jobs/agenda-i18n');
-const mongoConnectionString = 'mongodb://127.0.0.1/agenda';
 
+// 1. Khởi tạo với Tiếng Việt (Mặc định)
 const agenda = new Agenda({
-	db: { address: mongoConnectionString },
-	language: 'vi' // Chọn ngôn ngữ: 'vi' hoặc 'en'
+	db: { address: 'mongodb://127.0.0.1/agenda' },
+	language: 'vi' // Các thông báo log và lỗi hệ thống sẽ hiển thị bằng Tiếng Việt
 });
 
-// Hoặc ghi đè tên collection mặc định:
-// const agenda = new Agenda({db: {address: mongoConnectionString, collection: 'jobCollectionName'}});
-
-// Hoặc thêm các tùy chọn kết nối:
-// const agenda = new Agenda({db: {address: mongoConnectionString, collection: 'jobCollectionName', options: {ssl: true}}});
-
-// Hoặc truyền vào một instance MongoClient có sẵn
-// const agenda = new Agenda({mongo: myMongoClient});
+// 2. Hoặc khởi tạo với Tiếng Anh
+/*
+const agenda = new Agenda({
+  db: { address: 'mongodb://127.0.0.1/agenda' },
+  language: 'en' // Các thông báo log và lỗi hệ thống sẽ hiển thị bằng Tiếng Anh
+});
+*/
 
 agenda.define('xóa người dùng cũ', async job => {
-	await User.remove({ lastLogIn: { $lt: haiNgayTruoc } });
+	// Logic xử lý của bạn ở đây
+	console.log('Đang chạy job...');
 });
 
 (async function () {
-	// IIFE để sử dụng async/await
 	await agenda.start();
-
 	await agenda.every('3 minutes', 'xóa người dùng cũ');
-
-	// Hoặc bạn cũng có thể làm như sau:
-	await agenda.every('*/3 * * * *', 'xóa người dùng cũ');
 })();
 ```
 

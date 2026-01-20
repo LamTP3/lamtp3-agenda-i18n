@@ -84,31 +84,29 @@ You will also need a working [Mongo](https://www.mongodb.com/) database (v4+) to
 
 ```js
 const { Agenda } = require('@lamtp3-jobs/agenda-i18n');
-const mongoConnectionString = 'mongodb://127.0.0.1/agenda';
 
-const agenda = new Agenda({ db: { address: mongoConnectionString } });
+// 1. Initialize with Vietnamese (Default)
+const agenda = new Agenda({
+	db: { address: 'mongodb://127.0.0.1/agenda' },
+	language: 'vi' // Logs and system errors will be in Vietnamese
+});
 
-// Or override the default collection name:
-// const agenda = new Agenda({db: {address: mongoConnectionString, collection: 'jobCollectionName'}});
-
-// or pass additional connection options:
-// const agenda = new Agenda({db: {address: mongoConnectionString, collection: 'jobCollectionName', options: {ssl: true}}});
-
-// or pass in an existing mongodb-native MongoClient instance
-// const agenda = new Agenda({mongo: myMongoClient});
+// 2. Or initialize with English
+/*
+const agenda = new Agenda({
+  db: { address: 'mongodb://127.0.0.1/agenda' },
+  language: 'en' // Logs and system errors will be in English
+});
+*/
 
 agenda.define('delete old users', async job => {
-	await User.remove({ lastLogIn: { $lt: twoDaysAgo } });
+	// Your logic here
+	console.log('Running job...');
 });
 
 (async function () {
-	// IIFE to give access to async/await
 	await agenda.start();
-
 	await agenda.every('3 minutes', 'delete old users');
-
-	// Alternatively, you could also do:
-	await agenda.every('*/3 * * * *', 'delete old users');
 })();
 ```
 
