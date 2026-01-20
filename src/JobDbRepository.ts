@@ -23,6 +23,7 @@ const log = debug('agenda:db');
  */
 export class JobDbRepository {
 	collection: Collection<IJobParameters>;
+	db: Db;
 
 	constructor(
 		private agenda: Agenda,
@@ -169,12 +170,12 @@ export class JobDbRepository {
 	}
 
 	async connect(): Promise<void> {
-		const db = await this.createConnection();
-		log('successful connection to MongoDB', db.options);
+		this.db = await this.createConnection();
+		log('successful connection to MongoDB', this.db.options);
 
 		const collection = this.connectOptions.db?.collection || 'agendaJobs';
 
-		this.collection = db.collection(collection);
+		this.collection = this.db.collection(collection);
 		if (log.enabled) {
 			log(
 				`connected with collection: ${collection}, collection size: ${

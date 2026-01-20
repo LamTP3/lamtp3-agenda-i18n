@@ -45,6 +45,12 @@ export class Agenda extends EventEmitter {
 	};
 
 	db: JobDbRepository;
+	get _collection() {
+		return this.db.collection;
+	}
+	get _mdb() {
+		return this.db.db;
+	}
 
 	// internally used
 	on(event: 'processJob', listener: (job: JobWithId) => void): this;
