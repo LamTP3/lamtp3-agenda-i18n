@@ -1,6 +1,6 @@
 {
   "name": "@lamtp3-jobs/agenda-i18n",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.1-alpha.1",
   "description": "Light weight job scheduler for Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
