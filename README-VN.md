@@ -72,7 +72,7 @@ db.agendaJobs.ensureIndex(
 Cài đặt qua NPM:
 
 ```bash
-npm install @lamtp3/agenda-i18n
+npm install @lamtp3-jobs/agenda-i18n
 ```
 
 Bạn cũng sẽ cần một cơ sở dữ liệu [Mongo](https://www.mongodb.com/) đang hoạt động (v4+) để kết nối.
@@ -80,7 +80,7 @@ Bạn cũng sẽ cần một cơ sở dữ liệu [Mongo](https://www.mongodb.co
 # Ví dụ sử dụng
 
 ```javascript
-const { Agenda } = require('@lamtp3/agenda-i18n');
+const { Agenda } = require('@lamtp3-jobs/agenda-i18n');
 const mongoConnectionString = 'mongodb://127.0.0.1/agenda';
 
 const agenda = new Agenda({

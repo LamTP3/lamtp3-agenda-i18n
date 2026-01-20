@@ -76,13 +76,14 @@ _Kudos for making the comparison chart goes to [Bull](https://www.npmjs.com/pack
 
 Install via NPM
 
-    npm install @hokify/agenda
+    npm install @lamtp3-jobs/agenda-i18n
 
 You will also need a working [Mongo](https://www.mongodb.com/) database (v4+) to point it to.
 
 # Example Usage
 
 ```js
+const { Agenda } = require('@lamtp3-jobs/agenda-i18n');
 const mongoConnectionString = 'mongodb://127.0.0.1/agenda';
 
 const agenda = new Agenda({ db: { address: mongoConnectionString } });
