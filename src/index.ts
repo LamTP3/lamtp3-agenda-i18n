@@ -15,6 +15,7 @@ import { JobPriority, parsePriority } from './utils/priority';
 import { JobProcessor } from './JobProcessor';
 import { calculateProcessEvery } from './utils/processEvery';
 import { getCallerFilePath } from './utils/stack';
+import { translate, Language } from './utils/i18n';
 
 const log = debug('agenda');
 
@@ -26,7 +27,8 @@ const DefaultOptions = {
 	lockLimit: 0,
 	defaultLockLifetime: 10 * 60 * 1000,
 	sort: { nextRunAt: 1, priority: -1 } as const,
-	forkHelper: { path: 'dist/childWorker.js' }
+	forkHelper: { path: 'dist/childWorker.js' },
+	language: 'vi'
 };
 
 /**
@@ -79,7 +81,7 @@ export class Agenda extends EventEmitter {
 	async runForkedJob(jobId: string) {
 		const jobData = await this.db.getJobById(jobId);
 		if (!jobData) {
-			throw new Error('db entry not found');
+			throw new Error(this.$t('dbEntryNotFound'));
 		}
 		const job = new Job(this, jobData);
 		await job.runJob();
@@ -87,7 +89,7 @@ export class Agenda extends EventEmitter {
 
 	async getRunningStats(fullDetails = false): Promise<IAgendaStatus> {
 		if (!this.jobProcessor) {
-			throw new Error('agenda not running!');
+			throw new Error(this.$t('agendaNotRunning'));
 		}
 		return this.jobProcessor.getStatus(fullDetails);
 	}
@@ -105,6 +107,7 @@ export class Agenda extends EventEmitter {
 			defaultLockLimit?: number;
 			lockLimit?: number;
 			defaultLockLifetime?: number;
+			language?: string;
 			// eslint-disable-next-line @typescript-eslint/ban-types
 		} & (IDatabaseOptions | IMongoOptions | {}) &
 			IDbConfig & {
@@ -123,7 +126,8 @@ export class Agenda extends EventEmitter {
 			defaultLockLimit: config.defaultLockLimit || DefaultOptions.defaultLockLimit,
 			lockLimit: config.lockLimit || DefaultOptions.lockLimit,
 			defaultLockLifetime: config.defaultLockLifetime || DefaultOptions.defaultLockLifetime, // 10 minute default lockLifetime
-			sort: config.sort || DefaultOptions.sort
+			sort: config.sort || DefaultOptions.sort,
+			language: config.language || DefaultOptions.language
 		};
 
 		this.forkedWorker = config.forkedWorker;
@@ -178,6 +182,17 @@ export class Agenda extends EventEmitter {
 		return this;
 	}
 
+	/**
+	 * Translate string
+	 */
+	$t(key: any, ...args: any[]): string {
+		const translated = translate((this.attrs.language as Language) || 'vi', key);
+		if (args.length > 0) {
+			return translated.replace('%s', args[0]);
+		}
+		return translated;
+	}
+
 	private hasDatabaseConfig(
 		config: unknown
 	): config is (IDatabaseOptions | IMongoOptions) & IDbConfig {
@@ -189,10 +204,10 @@ export class Agenda extends EventEmitter {
 	 * @param query
 	 */
 	async cancel(query: Filter<IJobParameters>): Promise<number> {
-		log('attempting to cancel all Agenda jobs', query);
+		log(this.$t('cancellingJobs'), query);
 		try {
 			const amountOfRemovedJobs = await this.db.removeJobs(query);
-			log('%s jobs cancelled', amountOfRemovedJobs);
+			log(this.$t('cancelledJobs', amountOfRemovedJobs));
 			return amountOfRemovedJobs;
 		} catch (error) {
 			log('error trying to delete jobs from MongoDB');
@@ -300,7 +315,7 @@ export class Agenda extends EventEmitter {
 	 */
 	async purge(): Promise<number> {
 		const definedNames = Object.keys(this.definitions);
-		log('Agenda.purge(%o)', definedNames);
+		log(this.$t('purgeCalled', definedNames));
 		return this.cancel({ name: { $not: { $in: definedNames } } });
 	}
 
@@ -336,7 +351,7 @@ export class Agenda extends EventEmitter {
 		}
 	): void {
 		if (this.definitions[name]) {
-			log('overwriting already defined agenda job', name);
+			log(this.$t('overwritingAlreadyDefined', name));
 		}
 
 		const filePath = getCallerFilePath();
@@ -371,7 +386,7 @@ export class Agenda extends EventEmitter {
 
 			return jobs;
 		} catch (error) {
-			log('createJobs() -> error creating one or more of the jobs', error);
+			log(this.$t('errorCreatingJobs'), error);
 			throw error;
 		}
 	}
@@ -511,7 +526,7 @@ export class Agenda extends EventEmitter {
 
 			return job as Job<DATA | void>;
 		} catch (error) {
-			log('error trying to create a job for this exact moment');
+			log(this.$t('errorCreatingNow'));
 			throw error;
 		}
 	}
@@ -521,10 +536,7 @@ export class Agenda extends EventEmitter {
 	 * This method will only resolve if a db has been set up beforehand.
 	 */
 	async start(): Promise<void> {
-		log(
-			'Agenda.start called, waiting for agenda to be initialized (db connection)',
-			this.attrs.processEvery
-		);
+		log(this.$t('startWait'), this.attrs.processEvery);
 		await this.ready;
 		if (this.jobProcessor) {
 			log('Agenda.start was already called, ignoring');
@@ -550,7 +562,7 @@ export class Agenda extends EventEmitter {
 			return;
 		}
 
-		log('Agenda.stop called, clearing interval for processJobs()');
+		log(this.$t('stopCalled'));
 
 		const lockedJobs = this.jobProcessor.stop();
 
@@ -558,7 +570,7 @@ export class Agenda extends EventEmitter {
 		const jobIds = lockedJobs?.map(job => job.attrs._id) || [];
 
 		if (jobIds.length > 0) {
-			log('about to unlock jobs with ids: %O', jobIds);
+			log(this.$t('unlockingJobs'), jobIds);
 			await this.db.unlockJobs(jobIds);
 		}
 

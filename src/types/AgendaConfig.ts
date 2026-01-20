@@ -12,4 +12,5 @@ export interface IAgendaConfig {
 	lockLimit: number;
 
 	defaultLockLifetime: number;
+	language?: string;
 }

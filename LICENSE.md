@@ -1,9 +1,12 @@
 ## License
+
 (The MIT License)
 
 Copyright (c) 2013 Ryan Schmukler <ryan@slingingcode.com>
 
 Copyright (c) 2022 Simon Tretter <simon.tretter@hokify.com>
+
+Copyright (c) 2026 Tran Phuc Lam <phuclamtran2810@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the 'Software'), to deal in

@@ -18,9 +18,10 @@ it differs from the original version in following points:
 - Bugfixes and improvements for locking & job processing (concurrency, lockLimit,..)
 - Breaking change: define() config paramter moved from 2nd position to 3rd
 - getRunningStats()
-- automatically waits for agenda to be connected before calling any database operations
-- uses a database abstraction layer behind the scene
-- does not create a database index by default, you can set `ensureIndex: true` when initializing Agenda
+- Automatically waits for agenda to be connected before calling any database operations.
+- Uses a database abstraction layer behind the scene.
+- **Multi-language support (i18n):** Supports Vietnamese and English for internal system messages.
+- Does not create a database index by default, you can set `ensureIndex: true` when initializing Agenda.
   or run manually:
 
 ```
@@ -194,8 +195,14 @@ Possible agenda config options:
 		options: MongoClientOptions;
 	}
 	mongo: Db;
+	language: 'vi' | 'en';
 }
 ```
+
+#### language (optional)
+
+Takes a string `'vi'` or `'en'`. Specifies the language for internal log messages and errors.
+By default it is `'vi'`.
 
 Agenda uses [Human Interval](http://github.com/rschmukler/human-interval) for specifying the intervals. It supports the following units:
 
