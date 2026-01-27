@@ -15,7 +15,7 @@ import { JobPriority, parsePriority } from './utils/priority';
 import { JobProcessor } from './JobProcessor';
 import { calculateProcessEvery } from './utils/processEvery';
 import { getCallerFilePath } from './utils/stack';
-import { translate, Language } from './utils/i18n';
+import { translate, Language, IAgendaStrings } from './utils/i18n';
 
 const log = debug('agenda');
 
@@ -28,7 +28,8 @@ const DefaultOptions = {
 	defaultLockLifetime: 10 * 60 * 1000,
 	sort: { nextRunAt: 1, priority: -1 } as const,
 	forkHelper: { path: 'dist/childWorker.js' },
-	language: 'vi'
+	language: 'en',
+	i18n: {}
 };
 
 /**
@@ -114,6 +115,7 @@ export class Agenda extends EventEmitter {
 			lockLimit?: number;
 			defaultLockLifetime?: number;
 			language?: string;
+			i18n?: Partial<IAgendaStrings>;
 			// eslint-disable-next-line @typescript-eslint/ban-types
 		} & (IDatabaseOptions | IMongoOptions | {}) &
 			IDbConfig & {
@@ -133,7 +135,8 @@ export class Agenda extends EventEmitter {
 			lockLimit: config.lockLimit || DefaultOptions.lockLimit,
 			defaultLockLifetime: config.defaultLockLifetime || DefaultOptions.defaultLockLifetime, // 10 minute default lockLifetime
 			sort: config.sort || DefaultOptions.sort,
-			language: config.language || DefaultOptions.language
+			language: config.language || DefaultOptions.language,
+			i18n: config.i18n || DefaultOptions.i18n
 		};
 
 		this.forkedWorker = config.forkedWorker;
@@ -191,12 +194,17 @@ export class Agenda extends EventEmitter {
 	/**
 	 * Translate string
 	 */
-	$t(key: any, ...args: any[]): string {
-		const translated = translate((this.attrs.language as Language) || 'vi', key);
-		if (args.length > 0) {
-			return translated.replace('%s', args[0]);
+	$t(key: keyof IAgendaStrings, ...args: any[]): string {
+		let text = this.attrs.i18n?.[key];
+
+		if (!text) {
+			text = translate((this.attrs.language as Language) || 'en', key);
 		}
-		return translated;
+
+		if (args.length > 0) {
+			return text.replace('%s', args[0]);
+		}
+		return text;
 	}
 
 	private hasDatabaseConfig(

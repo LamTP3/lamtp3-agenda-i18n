@@ -85,17 +85,38 @@ You will also need a working [Mongo](https://www.mongodb.com/) database (v4+) to
 ```js
 const { Agenda } = require('@lamtp3-jobs/agenda-i18n');
 
-// 1. Initialize with Vietnamese (Default)
+// 1. Initialize with English (Default)
 const agenda = new Agenda({
-	db: { address: 'mongodb://127.0.0.1/agenda' },
-	language: 'vi' // Logs and system errors will be in Vietnamese
+	db: { address: 'mongodb://127.0.0.1/agenda' }
+	// language: 'en' // Default is 'en', so this is optional
 });
 
-// 2. Or initialize with English
+// 2. Or initialize with Vietnamese
 /*
 const agenda = new Agenda({
   db: { address: 'mongodb://127.0.0.1/agenda' },
-  language: 'en' // Logs and system errors will be in English
+  language: 'vi' // Logs and system errors will be in Vietnamese
+});
+*/
+
+// 3. Or use a custom dictionary
+/*
+const agenda = new Agenda({
+  db: { address: 'mongodb://127.0.0.1/agenda' },
+  i18n: {
+    // You can override specific keys or provide a full translation
+    agendaNotRunning: 'Agenda system is not running!',
+    dbEntryNotFound: 'Database entry not found',
+    overwritingAlreadyDefined: 'Overwriting already defined job: %s',
+    errorCreatingJobs: 'Error creating jobs',
+    errorCreatingNow: 'Error creating immediate job',
+    startWait: 'Waiting for database connection...',
+    stopCalled: 'Stopping job processor...',
+    unlockingJobs: 'Unlocking jobs: %O',
+    cancellingJobs: 'Cancelling all jobs',
+    cancelledJobs: '%s jobs cancelled',
+    purgeCalled: 'Purging jobs: %o'
+  }
 });
 */
 
@@ -195,13 +216,19 @@ Possible agenda config options:
 	}
 	mongo: Db;
 	language: 'vi' | 'en';
+	i18n: Partial<IAgendaStrings>;
 }
 ```
 
 #### language (optional)
 
 Takes a string `'vi'` or `'en'`. Specifies the language for internal log messages and errors.
-By default it is `'vi'`.
+By default it is `'en'`.
+
+#### i18n (optional)
+
+Takes an object with keys matching `IAgendaStrings`. Allows overriding specific strings or providing a completely custom language dictionary.
+Priority: `i18n` prop > `language` prop > Default ('en').
 
 Agenda uses [Human Interval](http://github.com/rschmukler/human-interval) for specifying the intervals. It supports the following units:
 

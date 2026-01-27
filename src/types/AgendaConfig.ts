@@ -1,3 +1,5 @@
+import { IAgendaStrings } from '../utils/i18n';
+
 export interface IAgendaConfig {
 	name?: string;
 
@@ -13,4 +15,5 @@ export interface IAgendaConfig {
 
 	defaultLockLifetime: number;
 	language?: string;
+	i18n?: Partial<IAgendaStrings>;
 }

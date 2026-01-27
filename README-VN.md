@@ -82,17 +82,38 @@ Bạn cũng sẽ cần một cơ sở dữ liệu [Mongo](https://www.mongodb.co
 ```javascript
 const { Agenda } = require('@lamtp3-jobs/agenda-i18n');
 
-// 1. Khởi tạo với Tiếng Việt (Mặc định)
+// 1. Khởi tạo với Tiếng Anh (Mặc định)
 const agenda = new Agenda({
-	db: { address: 'mongodb://127.0.0.1/agenda' },
-	language: 'vi' // Các thông báo log và lỗi hệ thống sẽ hiển thị bằng Tiếng Việt
+	db: { address: 'mongodb://127.0.0.1/agenda' }
+	// language: 'en' // Mặc định là Tiếng Anh
 });
 
-// 2. Hoặc khởi tạo với Tiếng Anh
+// 2. Hoặc khởi tạo với Tiếng Việt
 /*
 const agenda = new Agenda({
   db: { address: 'mongodb://127.0.0.1/agenda' },
-  language: 'en' // Các thông báo log và lỗi hệ thống sẽ hiển thị bằng Tiếng Anh
+  language: 'vi' // Các thông báo log và lỗi hệ thống sẽ hiển thị bằng Tiếng Việt
+});
+*/
+
+// 3. Hoặc sử dụng từ điển tùy chỉnh
+/*
+const agenda = new Agenda({
+  db: { address: 'mongodb://127.0.0.1/agenda' },
+  i18n: {
+    // Bạn có thể ghi đè các key cụ thể hoặc cung cấp toàn bộ bản dịch
+    agendaNotRunning: 'Hệ thống chưa chạy nha!',
+    dbEntryNotFound: 'Không tìm thấy bản ghi trong DB',
+    overwritingAlreadyDefined: 'Đang ghi đè job đã có: %s',
+    errorCreatingJobs: 'Lỗi khi tạo job',
+    errorCreatingNow: 'Lỗi khi tạo job chạy ngay',
+    startWait: 'Đang đợi kết nối CSDL...',
+    stopCalled: 'Đang dừng xử lý...',
+    unlockingJobs: 'Đang mở khóa job: %O',
+    cancellingJobs: 'Đang hủy tất cả job',
+    cancelledJobs: 'Đã hủy %s job',
+    purgeCalled: 'Đang dọn dẹp job: %o'
+  }
 });
 */
 
@@ -190,14 +211,20 @@ Các tùy chọn cấu hình khả thi:
 		options: MongoClientOptions;
 	},
 	mongo: Db; // Sử dụng instance Db có sẵn
-	language: 'vi' | 'en' // Ngôn ngữ hệ thống
+	language: 'vi' | 'en'; // Ngôn ngữ hệ thống
+	i18n: Partial<IAgendaStrings>; // Từ điển tùy chỉnh
 }
 ```
 
 ### language (tùy chọn)
 
 Sử dụng giá trị `'vi'` hoặc `'en'`. Chỉ định ngôn ngữ cho các thông báo nhật ký (log) và lỗi hệ thống.
-Giá trị mặc định là `'vi'`.
+Giá trị mặc định là `'en'`.
+
+### i18n (tùy chọn)
+
+Nhận một object chứa các key khớp với `IAgendaStrings`. Cho phép ghi đè các câu thông báo cụ thể hoặc cung cấp một bộ ngôn ngữ hoàn toàn mới.
+Độ ưu tiên: prop `i18n` > prop `language` > Mặc định ('en').
 
 Agenda sử dụng [Human Interval](http://github.com/rschmukler/human-interval) để chỉ định các khoảng thời gian. Nó hỗ trợ các đơn vị sau:
 

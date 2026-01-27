@@ -1,4 +1,18 @@
-export const i18nData = {
+export interface IAgendaStrings {
+	agendaNotRunning: string;
+	dbEntryNotFound: string;
+	overwritingAlreadyDefined: string;
+	errorCreatingJobs: string;
+	errorCreatingNow: string;
+	startWait: string;
+	stopCalled: string;
+	unlockingJobs: string;
+	cancellingJobs: string;
+	cancelledJobs: string;
+	purgeCalled: string;
+}
+
+export const i18nData: { [key: string]: IAgendaStrings } = {
 	en: {
 		agendaNotRunning: 'agenda not running!',
 		dbEntryNotFound: 'db entry not found',
@@ -29,7 +43,7 @@ export const i18nData = {
 
 export type Language = keyof typeof i18nData;
 
-export function translate(lang: Language, key: keyof typeof i18nData['en']): string {
-	const translations = i18nData[lang] || i18nData.vi; // Mặc định là Tiếng Việt như yêu cầu
+export function translate(lang: Language, key: keyof IAgendaStrings): string {
+	const translations = i18nData[lang] || i18nData.en; // Default is English
 	return translations[key] || key;
 }
